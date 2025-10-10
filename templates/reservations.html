@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-calendar-alt"></i> Reservations</h1>
+    <a href="{{ url_for('make_reservation') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> New Reservation
+    </a>
+</div>
+
+<!-- Search and Filter Section -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by guest name, room number, or ID...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select id="statusFilter" class="form-select">
+                    <option value="all">All Statuses</option>
+                    <option value="reserved">Reserved</option>
+                    <option value="checked-in">Checked In</option>
+                    <option value="checked-out">Checked Out</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button id="resetFilters" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-refresh"></i> Reset Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+{% if reservations %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center py-3">
+                <h4 class="mb-0">{{ reservations|length }}</h4>
+                <small>Total Reservations</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center py-3">
+                <h4 class="mb-0">{{ reservations|selectattr('is_checked_in')|list|length }}</h4>
+                <small>Checked In</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center py-3">
+                <h4 class="mb-0">{{ reservations|rejectattr('is_checked_in')|rejectattr('is_checked_out')|list|length }}</h4>
+                <small>Reserved</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-secondary text-white">
+            <div class="card-body text-center py-3">
+                <h4 class="mb-0">{{ reservations|selectattr('is_checked_out')|list|length }}</h4>
+                <small>Checked Out</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Reservations Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" id="reservationsTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Reservation ID</th>
+                        <th>Guest</th>
+                        <th>Room</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                    <tr data-status="{% if reservation.is_checked_out %}checked-out{% elif reservation.is_checked_in %}checked-in{% else %}reserved{% endif %}"
+                        data-guest="{{ reservation.guest_name.lower() }}"
+                        data-room="{{ reservation.room_number }}"
+                        data-id="{{ reservation.reservation_id }}">
+                        <td>
+                            <strong>{{ reservation.reservation_id }}</strong>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-user text-muted"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-2">
+                                    <strong>{{ reservation.guest_name }}</strong>
+                                    <div class="text-muted small">{{ reservation.phone }}</div>
+                                    {% if reservation.email %}
+                                    <div class="text-muted small">{{ reservation.email }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span class="fw-bold">Room {{ reservation.room_number }}</span>
+                                <div class="text-muted small">{{ reservation.room_type }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span class="fw-bold">
+                                    {% if reservation.check_in is string %}
+                                        {{ reservation.check_in }}
+                                    {% else %}
+                                        {{ reservation.check_in.strftime('%Y-%m-%d') }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span class="fw-bold">
+                                    {% if reservation.check_out is string %}
+                                        {{ reservation.check_out }}
+                                    {% else %}
+                                        {{ reservation.check_out.strftime('%Y-%m-%d') }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-bold">${{ "%.2f"|format(reservation.total_amount|float) }}</span>
+                        </td>
+                        <td>
+                            {% if reservation.is_checked_out %}
+                                <span class="badge bg-secondary">Checked Out</span>
+                            {% elif reservation.is_checked_in %}
+                                <span class="badge bg-success">Checked In</span>
+                            {% else %}
+                                <span class="badge bg-warning">Reserved</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                {% if not reservation.is_checked_in and not reservation.is_checked_out %}
+                                <a href="{{ url_for('check_in', reservation_id=reservation.reservation_id) }}" 
+                                   class="btn btn-sm btn-success" 
+                                   onclick="return confirm('Check in {{ reservation.guest_name }}?')">
+                                    <i class="fas fa-sign-in-alt"></i> Check In
+                                </a>
+                                {% elif reservation.is_checked_in and not reservation.is_checked_out %}
+                                <a href="{{ url_for('check_out', reservation_id=reservation.reservation_id) }}" 
+                                   class="btn btn-sm btn-warning" 
+                                   onclick="return confirm('Check out {{ reservation.guest_name }}?')">
+                                    <i class="fas fa-sign-out-alt"></i> Check Out
+                                </a>
+                                {% endif %}
+                                
+                                <!-- Action Dropdown -->
+                                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle dropdown-toggle-split" 
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('view_reservation', reservation_id=reservation.reservation_id) }}">
+                                            <i class="fas fa-eye me-2"></i> View Details
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('edit_reservation', reservation_id=reservation.reservation_id) }}">
+                                            <i class="fas fa-edit me-2"></i> Edit
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        {% if not reservation.is_checked_in %}
+                                            <a class="dropdown-item text-danger" 
+                                               href="{{ url_for('cancel_reservation', reservation_id=reservation.reservation_id) }}" 
+                                               onclick="return confirm('Are you sure you want to cancel reservation {{ reservation.reservation_id }} for {{ reservation.guest_name }}?')">
+                                                <i class="fas fa-times me-2"></i> Cancel
+                                            </a>
+                                        {% else %}
+                                            <span class="dropdown-item text-muted disabled">
+                                                <i class="fas fa-times me-2"></i> Cancel (Not Available)
+                                            </span>
+                                        {% endif %}
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="text-center py-5">
+                                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">No Reservations Found</h4>
+                                <p class="text-muted">Create your first reservation to get started.</p>
+                                <a href="{{ url_for('make_reservation') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Make Reservation
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Search and filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const resetFilters = document.getElementById('resetFilters');
+        const tableRows = document.querySelectorAll('#reservationsTable tbody tr[data-status]');
+        
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const statusValue = statusFilter.value;
+            
+            let visibleCount = 0;
+            
+            tableRows.forEach(row => {
+                const guestName = row.getAttribute('data-guest');
+                const roomNumber = row.getAttribute('data-room');
+                const reservationId = row.getAttribute('data-id');
+                const rowStatus = row.getAttribute('data-status');
+                
+                // Check search term match
+                const matchesSearch = searchTerm === '' || 
+                    guestName.includes(searchTerm) ||
+                    roomNumber.includes(searchTerm) ||
+                    reservationId.includes(searchTerm);
+                
+                // Check status match
+                const matchesStatus = statusValue === 'all' || rowStatus === statusValue;
+                
+                // Show/hide row based on filters
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Show/hide the "no reservations" row
+            const noReservationsRow = document.querySelector('#reservationsTable tbody tr:not([data-status])');
+            if (noReservationsRow) {
+                noReservationsRow.style.display = visibleCount === 0 ? '' : 'none';
+            }
+        }
+        
+        // Event listeners
+        searchInput.addEventListener('input', filterTable);
+        statusFilter.addEventListener('change', filterTable);
+        
+        resetFilters.addEventListener('click', function() {
+            searchInput.value = '';
+            statusFilter.value = 'all';
+            filterTable();
+        });
+        
+        // Initialize filters
+        filterTable();
+    });
+</script>
+{% endblock %}

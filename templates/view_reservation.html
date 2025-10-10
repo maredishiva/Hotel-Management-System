@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-eye"></i> Reservation Details</h1>
+            <a href="{{ url_for('reservations') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Reservations
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Reservation #{{ reservation.reservation_id }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Guest Information -->
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-user"></i> Guest Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Name:</th>
+                                        <td>{{ reservation.guest_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email:</th>
+                                        <td>{{ reservation.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone:</th>
+                                        <td>{{ reservation.phone }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address:</th>
+                                        <td>{{ reservation.address or 'Not provided' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>ID Type:</th>
+                                        <td>{{ reservation.id_type or 'Not provided' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>ID Number:</th>
+                                        <td>{{ reservation.id_number or 'Not provided' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reservation Details -->
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-calendar"></i> Reservation Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Room:</th>
+                                        <td>
+                                            <strong>Room {{ reservation.room_number }}</strong><br>
+                                            <small class="text-muted">{{ reservation.room_type }}</small>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Check-in:</th>
+                                        <td>{{ reservation.check_in }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Check-out:</th>
+                                        <td>{{ reservation.check_out }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nights:</th>
+                                        <td>{{ nights }} night{% if nights != 1 %}s{% endif %}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total Amount:</th>
+                                        <td><strong>${{ "%.2f"|format(reservation.total_amount|float) }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status:</th>
+                                        <td>
+                                            {% if reservation.is_checked_out %}
+                                                <span class="badge bg-secondary">Checked Out</span>
+                                            {% elif reservation.is_checked_in %}
+                                                <span class="badge bg-success">Checked In</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Reserved</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Created:</th>
+                                        <td>{{ reservation.created_date }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-bed"></i> Room Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Room Type:</strong> {{ reservation.room_type }}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Capacity:</strong> {{ reservation.capacity }} person{% if reservation.capacity != 1 %}s{% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Price per Night:</strong> ${{ "%.2f"|format(reservation.price|float) }}
+                            </div>
+                        </div>
+                        {% if reservation.description %}
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <strong>Description:</strong> {{ reservation.description }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center">
+                    <div class="btn-group" role="group">
+                        {% if not reservation.is_checked_in and not reservation.is_checked_out %}
+                        <a href="{{ url_for('check_in', reservation_id=reservation.reservation_id) }}" 
+                           class="btn btn-success" 
+                           onclick="return confirm('Check in {{ reservation.guest_name }}?')">
+                            <i class="fas fa-sign-in-alt"></i> Check In
+                        </a>
+                        {% elif reservation.is_checked_in and not reservation.is_checked_out %}
+                        <a href="{{ url_for('check_out', reservation_id=reservation.reservation_id) }}" 
+                           class="btn btn-warning" 
+                           onclick="return confirm('Check out {{ reservation.guest_name }}?')">
+                            <i class="fas fa-sign-out-alt"></i> Check Out
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('edit_reservation', reservation_id=reservation.reservation_id) }}" 
+                           class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Reservation
+                        </a>
+                        
+                        {% if not reservation.is_checked_in %}
+                        <a href="{{ url_for('cancel_reservation', reservation_id=reservation.reservation_id) }}" 
+                            class="btn btn-danger" 
+                            onclick="return confirm('Are you sure you want to cancel reservation {{ reservation.reservation_id }} for {{ reservation.guest_name }}?')">
+                            <i class="fas fa-times"></i> Cancel Reservation
+                        </a>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled title="Cannot cancel checked-in reservation">
+                            <i class="fas fa-times"></i> Cancel Reservation
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

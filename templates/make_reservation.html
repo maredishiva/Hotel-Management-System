@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0"><i class="fas fa-calendar-plus"></i> New Reservation</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="reservationForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="check_in" class="form-label">Check-in Date</label>
+                            <input type="date" class="form-control" id="check_in" name="check_in" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="check_out" class="form-label">Check-out Date</label>
+                            <input type="date" class="form-control" id="check_out" name="check_out" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="room_number" class="form-label">Select Room</label>
+                        <select class="form-control" id="room_number" name="room_number" required>
+                            <option value="">-- Select a Room --</option>
+                            {% for room in rooms %}
+                            <option value="{{ room.room_number }}" data-price="{{ room.price }}">
+                                Room {{ room.room_number }} - {{ room.room_type }} - ${{ room.price }}/night
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <h5>Guest Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_type" class="form-label">ID Type</label>
+                            <select class="form-control" id="id_type" name="id_type">
+                                <option value="">-- Select ID Type --</option>
+                                <option value="Passport">Passport</option>
+                                <option value="Driver License">Driver License</option>
+                                <option value="National ID">National ID</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_number" class="form-label">ID Number</label>
+                        <input type="text" class="form-control" id="id_number" name="id_number">
+                    </div>
+
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <h6>Reservation Summary</h6>
+                        <div id="reservationSummary">
+                            <p class="mb-1">Nights: <span id="nights">0</span></p>
+                            <p class="mb-1">Price per night: $<span id="pricePerNight">0</span></p>
+                            <p class="mb-0 fw-bold">Total: $<span id="totalAmount">0</span></p>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Create Reservation</button>
+                        <a href="{{ url_for('reservations') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkInInput = document.getElementById('check_in');
+    const checkOutInput = document.getElementById('check_out');
+    const roomSelect = document.getElementById('room_number');
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    checkInInput.min = today;
+    
+    function calculateTotal() {
+        const checkIn = new Date(checkInInput.value);
+        const checkOut = new Date(checkOutInput.value);
+        const roomOption = roomSelect.selectedOptions[0];
+        
+        if (checkIn && checkOut && roomOption && checkIn < checkOut) {
+            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+            const price = parseFloat(roomOption.dataset.price);
+            const total = nights * price;
+            
+            document.getElementById('nights').textContent = nights;
+            document.getElementById('pricePerNight').textContent = price.toFixed(2);
+            document.getElementById('totalAmount').textContent = total.toFixed(2);
+        } else {
+            document.getElementById('nights').textContent = '0';
+            document.getElementById('pricePerNight').textContent = '0';
+            document.getElementById('totalAmount').textContent = '0';
+        }
+    }
+    
+    checkInInput.addEventListener('change', calculateTotal);
+    checkOutInput.addEventListener('change', calculateTotal);
+    roomSelect.addEventListener('change', calculateTotal);
+});
+</script>
+{% endblock %}
