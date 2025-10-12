@@ -1,94 +1,128 @@
-Hotel Management System:
+# Hotel-Management-System
 
 A complete hotel management system built with Flask and SQLite for efficient hotel operations.
 
-Features:
+## 🌟Features:
 
-Reservation Management - Create, view, edit, and cancel reservations
-Room Management - Track room availability and status
-Guest Management - Store guest information and contact details
-Check-in/Check-out - Streamlined guest processing
-Dashboard - Real-time hotel statistics and occupancy rates
+- **Reservation Management** - Create, view, edit, and cancel reservations
 
-Installation:
+- **Room Management** - Track room availability and status
 
-1. Clone the repository:
+- **Guest Management** - Store guest information and contact details
 
-git clone https://github.com/maredishiva/hotel-management-system.git
-cd hotel-management-system
+- **Check-in/Check-out** - Streamlined guest processing
 
-2. Install dependencies
+- **Dashboard** - Real-time hotel statistics and occupancy rates
 
-pip install flask
-pip install -r requirements.txt
+## Installation:
 
-3. Run the application
+### 1. Clone the repository:
 
-python app.py
+`git clone https://github.com/maredishiva/hotel-management-system.git`
 
-4. Access the system
+`cd hotel-management-system`
 
-Open your browser and go to: http://localhost:5001
-The system automatically creates the database with sample data
+### 2. Install dependencies
 
-HOW TO USE:
+`pip install flask`
 
-1. View Dashboard
+`pip install -r requirements.txt`
 
-Open http://localhost:5001
-See real-time hotel statistics
-Check occupancy rates and revenue
+### 3. Run the application
 
-2. Manage Rooms
+`python app.py`
 
-Click "Rooms" in navigation
-View all rooms with status (Available/Occupied)
-Mark rooms as cleaned after checkout
-See room types, prices, and capacities
+### 4. Access the system
 
-3. Create Reservations
+- Open your browser and go to: http://localhost:5001
 
-Click "New Reservation" button
-Select dates and check room availability
-Enter guest details (name, email, phone)
-Choose from available rooms
-System automatically calculates total amount
+- The system automatically creates the database with sample data
 
-4. Check-in Guests
+## ⚙️ HOW TO USE:
 
-Go to Reservations page
-Click "Check In" button for reserved guests
-Room status automatically updates to "Occupied"
-Guest status changes to "Checked In"
+### 1. View Dashboard
 
-5. Check-out Guests
+- Open http://localhost:5001
+  
+- See real-time hotel statistics
+  
+- Check occupancy rates and revenue
 
-Find checked-in guests in Reservations
-Click "Check Out" button
-System processes payment automatically
-Room status changes to "Needs Cleaning"
+### 2. Manage Rooms
 
-6. Search & Filter
+- Click "Rooms" in navigation
+  
+- View all rooms with status (Available/Occupied)
 
-Use search box to find reservations by:
-Guest name
-Room number
-Reservation ID
-Filter by status: Reserved, Checked In, Checked Out
+- Mark rooms as cleaned after checkout
 
-Quick Tips:
+- See room types, prices, and capacities
 
-Check room availability before making reservations
-Search functionality helps find reservations quickly
-Status badges show current reservation state
-Action buttons change based on reservation status
-Auto-calculated totals based on stay duration
+### 3. Create Reservations
 
-Important Notes:
+- Click "New Reservation" button
 
-Cannot cancel checked-in reservations
-Check-out date must be after check-in date
-Room availability is checked automatically
-Past dates are not allowed for check-in
-Data persists between server restarts
+- Select dates and check room availability
+
+- Enter guest details (name, email, phone)
+
+- Choose from available rooms
+
+- System automatically calculates total amount
+
+### 4. Check-in Guests
+
+- Go to Reservations page
+
+- Click "Check In" button for reserved guests
+
+- Room status automatically updates to "Occupied"
+
+- Guest status changes to "Checked In"
+
+### 5. Check-out Guests
+
+- Find checked-in guests in Reservations
+
+- Click "Check Out" button
+
+- System processes payment automatically
+
+- Room status changes to "Needs Cleaning"
+
+### 6. Search & Filter
+
+#### 🔎Use search box to find reservations by:
+
+- Guest name
+
+- Room number
+
+- Reservation ID
+
+- Filter by status: Reserved, Checked In, Checked Out
+
+## 💡Quick Tips:
+
+- Check room availability before making reservations
+
+- Search functionality helps find reservations quickly
+
+- Status badges show current reservation state
+
+- Action buttons change based on reservation status
+
+- Auto-calculated totals based on stay duration
+
+## 🚨Important Notes:
+
+- Cannot cancel checked-in reservations
+
+- Check-out date must be after check-in date
+
+- Room availability is checked automatically
+
+- Past dates are not allowed for check-in
+
+- Data persists between server restarts
 
