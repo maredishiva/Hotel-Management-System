@@ -18,19 +18,19 @@ A complete hotel management system built with Flask and SQLite for efficient hot
 
 ### 1. Clone the repository:
 
-`git clone https://github.com/maredishiva/hotel-management-system.git`
+    git clone https://github.com/maredishiva/hotel-management-system.git
 
-`cd hotel-management-system`
+    cd hotel-management-system
 
 ### 2. Install dependencies
 
-`pip install flask`
+    pip install flask
 
-`pip install -r requirements.txt`
+    pip install -r requirements.txt
 
 ### 3. Run the application
 
-`python app.py`
+    python app.py
 
 ### 4. Access the system
 
