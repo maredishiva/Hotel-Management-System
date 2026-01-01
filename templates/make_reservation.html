@@ -26,7 +26,7 @@
                             <option value="">-- Select a Room --</option>
                             {% for room in rooms %}
                             <option value="{{ room.room_number }}" data-price="{{ room.price }}">
-                                Room {{ room.room_number }} - {{ room.room_type }} - ${{ room.price }}/night
+                                Room {{ room.room_number }} - {{ room.room_type }} - ₹{{ room.price }}/night
                             </option>
                             {% endfor %}
                         </select>
@@ -76,8 +76,8 @@
                         <h6>Reservation Summary</h6>
                         <div id="reservationSummary">
                             <p class="mb-1">Nights: <span id="nights">0</span></p>
-                            <p class="mb-1">Price per night: $<span id="pricePerNight">0</span></p>
-                            <p class="mb-0 fw-bold">Total: $<span id="totalAmount">0</span></p>
+                            <p class="mb-1">Price per night: ₹<span id="pricePerNight">0</span></p>
+                            <p class="mb-0 fw-bold">Total: ₹<span id="totalAmount">0</span></p>
                         </div>
                     </div>
 

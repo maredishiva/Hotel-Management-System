@@ -23,7 +23,7 @@
             <tr>
                 <td>{{ room.room_number }}</td>
                 <td>{{ room.room_type }}</td>
-                <td>${{ room.price }}</td>
+                <td>₹{{ room.price }}</td>
                 <td>{{ room.capacity }} person(s)</td>
                 <td>
                     {% if room.is_occupied %}

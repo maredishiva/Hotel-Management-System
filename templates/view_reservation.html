@@ -82,7 +82,7 @@
                                     </tr>
                                     <tr>
                                         <th>Total Amount:</th>
-                                        <td><strong>${{ "%.2f"|format(reservation.total_amount|float) }}</strong></td>
+                                        <td><strong>₹{{ "%.2f"|format(reservation.total_amount|float) }}</strong></td>
                                     </tr>
                                     <tr>
                                         <th>Status:</th>
@@ -120,7 +120,7 @@
                                 <strong>Capacity:</strong> {{ reservation.capacity }} person{% if reservation.capacity != 1 %}s{% endif %}
                             </div>
                             <div class="col-md-4">
-                                <strong>Price per Night:</strong> ${{ "%.2f"|format(reservation.price|float) }}
+                                <strong>Price per Night:</strong> ₹{{ "%.2f"|format(reservation.price|float) }}
                             </div>
                         </div>
                         {% if reservation.description %}

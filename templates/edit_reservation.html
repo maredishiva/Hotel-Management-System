@@ -63,7 +63,7 @@
                                         {% for room in rooms %}
                                         <option value="{{ room.room_number }}" 
                                                 {% if room.room_number == reservation.room_number %}selected{% endif %}>
-                                            Room {{ room.room_number }} - {{ room.room_type }} (${{ "%.2f"|format(room.price|float) }}/night)
+                                            Room {{ room.room_number }} - {{ room.room_type }} (₹{{ "%.2f"|format(room.price|float) }}/night)
                                         </option>
                                         {% endfor %}
                                     </select>
@@ -93,7 +93,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Current Total Amount</label>
                                     <p class="form-control-plaintext">
-                                        ${{ "%.2f"|format(reservation.total_amount|float) }}
+                                        ₹{{ "%.2f"|format(reservation.total_amount|float) }}
                                     </p>
                                 </div>
                                 <div class="col-md-6 mb-3">

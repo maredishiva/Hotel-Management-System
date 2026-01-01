@@ -144,7 +144,7 @@
                             </div>
                         </td>
                         <td>
-                            <span class="fw-bold">${{ "%.2f"|format(reservation.total_amount|float) }}</span>
+                            <span class="fw-bold">₹{{ "%.2f"|format(reservation.total_amount|float) }}</span>
                         </td>
                         <td>
                             {% if reservation.is_checked_out %}

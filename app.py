@@ -75,12 +75,12 @@ class Database:
         cursor.execute("SELECT COUNT(*) FROM rooms")
         if cursor.fetchone()[0] == 0:
             sample_rooms = [
-                (101, "Standard Single", 99.99, 1, 0, 1, "Cozy room with single bed"),
-                (102, "Standard Double", 149.99, 2, 0, 1, "Comfortable room with double bed"),
-                (103, "Deluxe Suite", 299.99, 4, 0, 1, "Spacious suite with living area"),
-                (201, "Standard Single", 99.99, 1, 0, 1, "Cozy room with single bed"),
-                (202, "Standard Double", 149.99, 2, 0, 1, "Comfortable room with double bed"),
-                (203, "Executive Suite", 399.99, 3, 0, 1, "Luxurious suite with premium amenities")
+                (101, "Standard Single", 5000, 1, 0, 1, "Cozy room with single bed"),
+                (102, "Standard Double", 7500, 2, 0, 1, "Comfortable room with double bed"),
+                (103, "Deluxe Suite", 15000, 4, 0, 1, "Spacious suite with living area"),
+                (201, "Standard Single", 5000, 1, 0, 1, "Cozy room with single bed"),
+                (202, "Standard Double", 7500, 2, 0, 1, "Comfortable room with double bed"),
+                (203, "Executive Suite", 20000, 3, 0, 1, "Luxurious suite with premium amenities")
             ]
             cursor.executemany(
                 "INSERT INTO rooms (room_number, room_type, price, capacity, is_occupied, clean, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -146,6 +146,19 @@ def index():
         else:
             stats['occupancy_rate'] = 0
         
+        # Keep payments in sync with latest reservation totals so revenue is accurate
+        db.execute_query('''
+            UPDATE payments 
+            SET amount = (
+                SELECT total_amount FROM reservations r 
+                WHERE r.reservation_id = payments.reservation_id
+            )
+            WHERE EXISTS (
+                SELECT 1 FROM reservations r 
+                WHERE r.reservation_id = payments.reservation_id
+            )
+        ''')
+
         # Get total revenue
         revenue_data = db.fetch_one("SELECT SUM(amount) as total FROM payments")
         stats['total_revenue'] = revenue_data['total'] or 0.0
